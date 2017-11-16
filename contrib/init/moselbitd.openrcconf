@@ -1,0 +1,33 @@
+# /etc/conf.d/moselbitd: config file for /etc/init.d/moselbitd
+
+# Config file location
+#MOSELBITD_CONFIGFILE="/etc/moselbit/moselbit.conf"
+
+# What directory to write pidfile to?  (created and owned by $MOSELBITD_USER)
+#MOSELBITD_PIDDIR="/var/run/moselbitd"
+
+# What filename to give the pidfile
+#MOSELBITD_PIDFILE="${MOSELBITD_PIDDIR}/moselbitd.pid"
+
+# Where to write moselbitd data (be mindful that the blockchain is large)
+#MOSELBITD_DATADIR="/var/lib/moselbitd"
+
+# User and group to own moselbitd process
+#MOSELBITD_USER="moselbit"
+#MOSELBITD_GROUP="moselbit"
+
+# Path to moselbitd executable
+#MOSELBITD_BIN="/usr/bin/moselbitd"
+
+# Nice value to run moselbitd under
+#MOSELBITD_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+MOSELBITD_OPTS="-disablewallet"
+
+# The timeout in seconds OpenRC will wait for moselbitd to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+MOSELBITD_SIGTERM_TIMEOUT=60

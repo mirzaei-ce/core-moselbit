@@ -1,0 +1,92 @@
+#!/sbin/runscript
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/moselbit/.moselbit" ]; then
+	MOSELBITD_DEFAULT_DATADIR="/var/lib/moselbit/.moselbit"
+else
+	MOSELBITD_DEFAULT_DATADIR="/var/lib/moselbitd"
+fi
+
+MOSELBITD_CONFIGFILE=${MOSELBITD_CONFIGFILE:-/etc/moselbit/moselbit.conf}
+MOSELBITD_PIDDIR=${MOSELBITD_PIDDIR:-/var/run/moselbitd}
+MOSELBITD_PIDFILE=${MOSELBITD_PIDFILE:-${MOSELBITD_PIDDIR}/moselbitd.pid}
+MOSELBITD_DATADIR=${MOSELBITD_DATADIR:-${MOSELBITD_DEFAULT_DATADIR}}
+MOSELBITD_USER=${MOSELBITD_USER:-${MOSELBIT_USER:-moselbit}}
+MOSELBITD_GROUP=${MOSELBITD_GROUP:-moselbit}
+MOSELBITD_BIN=${MOSELBITD_BIN:-/usr/bin/moselbitd}
+MOSELBITD_NICE=${MOSELBITD_NICE:-${NICELEVEL:-0}}
+MOSELBITD_OPTS="${MOSELBITD_OPTS:-${MOSELBIT_OPTS}}"
+
+name="Moselbit Core Daemon"
+description="Moselbit cryptocurrency P2P network daemon"
+
+command="/usr/bin/moselbitd"
+command_args="-pid=\"${MOSELBITD_PIDFILE}\" \
+		-conf=\"${MOSELBITD_CONFIGFILE}\" \
+		-datadir=\"${MOSELBITD_DATADIR}\" \
+		-daemon \
+		${MOSELBITD_OPTS}"
+
+required_files="${MOSELBITD_CONFIGFILE}"
+start_stop_daemon_args="-u ${MOSELBITD_USER} \
+			-N ${MOSELBITD_NICE} -w 2000"
+pidfile="${MOSELBITD_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${MOSELBITD_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${MOSELBITD_USER}:${MOSELBITD_GROUP}" \
+	"${MOSELBITD_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${MOSELBITD_USER}:${MOSELBITD_GROUP}" \
+	"${MOSELBITD_PIDDIR}"
+
+	checkpath -f \
+	-o ${MOSELBITD_USER}:${MOSELBITD_GROUP} \
+	-m 0660 \
+	${MOSELBITD_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${MOSELBITD_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run moselbitd."
+		eerror "The setting must appear in ${MOSELBITD_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following"
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is also recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"Moselbit Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

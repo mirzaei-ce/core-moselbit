@@ -1,0 +1,7 @@
+[main]
+host = https://www.transifex.com
+
+[moselbit.qt-translation-012x]
+file_filter = src/qt/locale/moselbit_<lang>.ts
+source_file = src/qt/locale/moselbit_en.ts
+source_lang = en

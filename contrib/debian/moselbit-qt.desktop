@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Moselbit
+Comment=Moselbit P2P Cryptocurrency
+Comment[fr]=Moselbit, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Moselbit, eşten eşe kriptografik sanal para birimi
+Exec=moselbit-qt %u
+Terminal=false
+Type=Application
+Icon=moselbit128
+MimeType=x-scheme-handler/moselbit;
+Categories=Office;Finance;

@@ -1,0 +1,6 @@
+usr/local/bin/moselbit-qt usr/bin
+share/pixmaps/moselbit32.xpm usr/share/pixmaps
+share/pixmaps/moselbit16.xpm usr/share/pixmaps
+share/pixmaps/moselbit128.png usr/share/pixmaps
+debian/moselbit-qt.desktop usr/share/applications
+debian/moselbit-qt.protocol usr/share/kde4/services/

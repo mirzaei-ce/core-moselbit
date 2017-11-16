@@ -1,0 +1,22 @@
+[Unit]
+Description=Moselbit's distributed currency daemon
+After=network.target
+
+[Service]
+User=moselbit
+Group=moselbit
+
+Type=forking
+PIDFile=/var/lib/moselbitd/moselbitd.pid
+ExecStart=/usr/bin/moselbitd -daemon -pid=/var/lib/moselbitd/moselbitd.pid \
+-conf=/etc/moselbit/moselbit.conf -datadir=/var/lib/moselbitd -disablewallet
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target
